@@ -1,0 +1,160 @@
+######################################################
+#
+#         ОСНОВНОЙ ЭКРАН ТАЙМЕРА
+#
+######################################################
+<Timer>:
+    name: "timer"
+    bt_start_timer: bt_start_timer
+
+
+    # данный виджет занимает весь экран
+    MDCard:
+        size_hint: .95, .95 # размер
+        pos_hint:{"center_x": .5, "center_y": .5} # позиция по центру
+        elevation:10 # задает поведение в виде возвышения над экраном
+        padding: "25dp"
+        spacing: "25dp"
+        orientation:'vertical'
+        radius: [30]
+
+        MDFloatLayout:
+            # ввод названия задачи
+            MDTextFieldRound:
+                id: task_name
+                icon_right: "pencil"
+                hint_text: "Введите название задачи: "
+                font_size: "16sp"
+                font_name: 'Text.ttf'
+                size_hint: .9, None
+                pos_hint: {"center_x": .5, "center_y": .93}
+                normal_color : [.79,.89,.79,1]
+                color_active : [.79,.89,.79,.5]
+                line_color: [.81,.81,.81,1]
+
+
+            ######################################################
+            #
+            #         КРУГОВОЙ ИНДИКАТОР ВЫПОЛНЕНИЯ
+            #
+            ######################################################
+            FloatLayout:
+                orientation: 'vertical'
+                size: root.width, root.height
+                Label:
+                    id: "current_progress"
+                    text: root.running_time # стартовый текст
+                    font_size: self.width/5 # размер текста
+                    color: (0,0,0,1) # цвет текста
+
+                    size_hint: None, None
+                    width: root.width/1.5
+                    height: root.width/1.5
+                    pos_hint:{"center_x": .6, "center_y": .7421}
+
+                    canvas.before:
+                        # эллипс не по прогрессу
+                        Color:
+                            rgba: (0.77,0.77, 0.77,1)
+                        Ellipse:
+                            size: self.size
+                            pos: self.pos
+
+                        # эллипс для отображения прогресса
+                        Color:
+                            rgba: (0.46,0.64,0.45,1)
+                        Ellipse:
+                            size: self.size
+                            pos: self.pos
+                            angle_end: root.remaining_time # принимает значение от 0 до 360
+                                          # задает конечный угол эллипса в градусах
+
+                        # внутренний эллипс
+                        Color:
+                            rgba: (1,1,1,1)
+                        Ellipse:
+                            size: [self.width - 20, self.height - 20]
+                            pos: [self.center_x - (self.width - 20)/2, self.center_y - (self.height - 20)/2]
+                Label:
+                    id: condition
+                    text: "Запустите таймер для начала фокусировки" # стартовый текст
+                    font_size: self.width/6 # размер текста
+                    font_name: 'Text.ttf'
+                    color: [0, 0, 0, 1] # цвет текста
+
+                    size_hint: None, None
+                    width: root.width/4
+                    height: root.width/3.5
+                    pos_hint:{"center_x": .6, "center_y": .45}
+
+                Label:
+                    id: count_pomidoros_text
+                    text: "" # стартовый текст
+                    font_size: self.width/5 # размер текста
+                    font_name: 'Text.ttf'
+                    color: [0, 0, 0, 1] # цвет текста
+
+                    size_hint: None, None
+                    width: root.width/3.5
+                    height: root.width/3.5
+                    pos_hint:{"center_x": .6, "center_y": .4}
+
+            ######################################################
+            #
+            #         ПАНЕЛЬ УПРАВЛЕНИЯ ТАЙМЕРОМ
+            #
+            ######################################################
+            MDCard:
+                size_hint: .85, .1
+                pos_hint: {"center_x": .5, "center_y": .2}
+                elevation: 4
+                md_bg_color: app.theme_cls.bg_light
+                radius: [16]
+
+                MDGridLayout:
+                    cols: 3
+                    size_hint_x: .9
+                    spacing: 2
+                    pos_hint: {"center_x": .5, "center_y": .5}
+
+                    AnchorLayout:
+                        anchor_x: 'left'
+                        # кнопка сброс с векторной иконкой
+                        MDIconButton:
+                            id: reset_timer
+                            icon: "replay"
+                            user_font_size: "20sp"
+                            theme_text_color: "Custom"
+                            md_bg_color: [.58, .77, .58, .6] # цвет фона иконки
+                            text_color: 1, 1, 1, 1
+                            on_release:
+                                root.reset_timer()
+                    AnchorLayout:
+                        anchor_x: 'center'
+                        # кнопка старт с векторной иконкой
+                        MDIconButton:
+                            id: bt_start_timer
+                            icon: "play"
+                            ripple_scale: 0
+                            theme_text_color: "Custom" # дает возможность изменить цвет иконки
+                            user_font_size: "40sp" # смена размера иконки
+                            md_bg_color: [.60, .80, .60, 1] # цвет фона иконки
+                            text_color: 1, 1, 1, 1 # смена цвета иконки
+                            disabled: False
+                            # действие при нажатии на кнопку
+
+                            on_press:
+                                root.start_timer()
+                    AnchorLayout:
+                        anchor_x: 'right'
+                        # кнопка пауза с векторной иконкой
+                        MDIconButton:
+                            id: pause_timer
+                            icon: "pause"
+                            ripple_scale: 0
+                            user_font_size: "20sp"
+                            theme_text_color: "Custom"
+                            md_bg_color: [.58, .77, .58, .6] # цвет фона иконки
+                            text_color: 1, 1, 1, 1
+                            on_release:
+                                root.pause_timer()
